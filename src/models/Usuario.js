@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db.js";
+import { Permiso } from "./Permisos.js";
 
 export const Usuario = sequelize.define(
     "usuario", {
@@ -12,6 +13,7 @@ export const Usuario = sequelize.define(
     nombre_usuario: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     nombre_apellido: {
         type: DataTypes.STRING,
@@ -20,6 +22,10 @@ export const Usuario = sequelize.define(
     id_permisos: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        references: {
+            model: Permiso,
+            key: "id"
+        }
     },
     password: {
         type: DataTypes.STRING,

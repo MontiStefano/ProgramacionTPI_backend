@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
@@ -17,5 +17,13 @@
     "morgan": "^1.10.1",
     "sequelize": "^6.37.8",
     "sqlite3": "^6.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MontiStefano/ProgramacionTPI_backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MontiStefano/ProgramacionTPI_backend/issues"
+  },
+  "homepage": "https://github.com/MontiStefano/ProgramacionTPI_backend#readme"
 }
