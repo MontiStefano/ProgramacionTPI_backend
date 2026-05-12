@@ -1,105 +1,14 @@
 import { Router } from "express";
 import { Permiso } from "../models/Permisos.js";
+import { getAllPermisos, getPermisoById, createPermiso, updatePermiso, deletePermiso } from "../controller/permisos.controller.js";
 
 const router = Router();
 
-router.get("/permisos", async (req, res) => {
-  try {
+router.get("/permisos", getAllPermisos);
+router.get("/permisos/:id", getPermisoById);
+router.post("/permisos", createPermiso);
+router.put("/permisos/:id", updatePermiso);
+router.delete("/permisos/:id", deletePermiso);
 
-    const permisos = await Permiso.findAll();
-    res.json(permisos);
-
-  } catch (error) {
-    console.error("Error al obtener permisos:", error);
-    res.status(500).json({ error: "Error al obtener permisos" });
-  }
-});
-
-router.get("/permisos/:id", async (req, res) => {
-  try {
-  
-    const { id } = req.params;
-    const permiso = await Permiso.findByPk(id);
-    res.json(permiso);
-  
-  } catch (error) {
-  
-    console.error("Error al obtener permisos:", error);
-    res.status(500).json({ error: "Error al obtener permisos" });
-
-  }
-});
-
-router.post("/permisos", async (req, res) => {
-  try {
-
-    const {
-      nombre_permiso,
-    } = req.body;
-    const nuevoPermiso = await Permiso.create({
-      nombre_permiso,
-    });
-
-    res.json(nuevoPermiso);
-    
-  } catch (error) {
-    
-    console.error("Error al crear permiso:", error);
-    res.status(500).json({ error: "Error al crear permiso" });
-  
-  }
-});
-
-
-
-router.put("/permisos/:id", async (req, res) => {
-  
-  try {
-  
-    const { id } = req.params;
-    const {
-      nombre_permiso,
-    } = req.body;
-
-    if (!id) {
-      return res.status(400).json({ error: "ID de permiso no proporcionado" });
-    }
-
-    if (
-      !nombre_permiso 
-    ) {
-      return res.status(400).json({ error: "Faltan campos obligatorios" });
-    }
-
-    const permiso = await Permiso.findByPk(id);
-
-    await permiso.update({
-      nombre_permiso,
-    });
-
-    res.json(permiso);
-  
-  } catch (error) {
-  
-    console.error("Error al Actualizar permisos:", error);
-    res.status(500).json({ error: "Error al actualizar permisos" });
-  
-  }
-});
-
-router.delete("/permisos/:id", async (req, res) => {
-  try {
-  
-    const { id } = req.params;
-    await Permiso.destroy({ where: { id } });
-    res.send(`Permiso ${id} eliminado con éxito`);
-  
-  } catch (error) {
-  
-    console.error("Error al Borrar permisos:", error);
-    res.status(500).json({ error: "Error al borrar permisos" });
-  
-  }
-});
 
 export default router;
