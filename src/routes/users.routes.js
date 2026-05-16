@@ -5,9 +5,9 @@ import { getAllUsuarios, getUsuarioById, createUsuario, updateUsuario, deleteUsu
 const router = Router();
 
 router.get("/usuarios", getAllUsuarios);
-router.get("/usuarios/:id", getUsuarioById);
+router.get("/usuarios/:email", getUsuarioById);
 router.post("/usuarios", createUsuario);
-router.put("/usuarios/:id", updateUsuario);
-router.delete("/usuarios/:id", deleteUsuario);
+router.put("/usuarios/:email", updateUsuario);
+router.delete("/usuarios/:email", deleteUsuario);
 
 export default router;

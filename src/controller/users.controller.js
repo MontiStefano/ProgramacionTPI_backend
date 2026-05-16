@@ -16,8 +16,8 @@ export const getAllUsuarios = async (req, res) => {
 export const getUsuarioById = async (req, res) => {
   try {
   
-    const { id } = req.params;
-    const usuario = await Usuario.findByPk(id);
+    const { email } = req.params;
+    const usuario = await Usuario.findByPk(email);
     res.json(usuario);
   
   } catch (error) {
@@ -32,19 +32,17 @@ export const createUsuario = async (req, res) => {
   try {
 
     const {
-      nombre_usuario,
-      nombre_apellido,
+      email,
+      nombreCompleto_usuario,
       id_permisos,
       password,
-      email,
       telefono,
     } = req.body;
     const nuevoUsuario = await Usuario.create({
-      nombre_usuario,
-      nombre_apellido,
+      email,
+      nombreCompleto_usuario,
       id_permisos,
       password,
-      email,
       telefono,
     });
 
@@ -53,7 +51,7 @@ export const createUsuario = async (req, res) => {
   } catch (error) {
     
     console.error("Error al crear usuario:", error);
-    res.status(500).json({ error: "Error al crear usuario" });
+    res.status(500).json({ error: `Error al crear usuario: ${error.message}` });
   
   }
 };
@@ -62,39 +60,33 @@ export const updateUsuario = async (req, res) => {
   
   try {
   
-    const { id } = req.params;
+    const { email } = req.params;
     const {
-      nombre_usuario,
-      nombre_apellido,
+      nombreCompleto_usuario,
       id_permisos,
       password,
-      email,
       telefono,
     } = req.body;
 
-    if (!id) {
-      return res.status(400).json({ error: "ID de usuario no proporcionado" });
+    if (!email) {
+      return res.status(400).json({ error: "Email de usuario no proporcionado" });
     }
 
     if (
-      !nombre_usuario &&
-      !nombre_apellido &&
+      !nombreCompleto_usuario &&
       !id_permisos &&
       !password &&
-      !email &&
       !telefono
     ) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
-    const usuario = await Usuario.findByPk(id);
+    const usuario = await Usuario.findByPk(email);
 
     await usuario.update({
-      nombre_usuario,
-      nombre_apellido,
+      nombreCompleto_usuario,
       id_permisos,
       password,
-      email,
       telefono,
     });
 
@@ -103,7 +95,7 @@ export const updateUsuario = async (req, res) => {
   } catch (error) {
   
     console.error("Error al Actualizar usuarios:", error);
-    res.status(500).json({ error: "Error al actualizar usuarios" });
+    res.status(500).json({ error: `Error al actualizar usuarios: ${error.message}` });
   
   }
 };
@@ -111,9 +103,9 @@ export const updateUsuario = async (req, res) => {
 export const deleteUsuario = async (req, res) => {
   try {
   
-    const { id } = req.params;
-    await Usuario.destroy({ where: { id } });
-    res.send(`Usuario ${id} eliminado con éxito`);
+    const { email } = req.params;
+    await Usuario.destroy({ where: { email } });
+    res.send(`Usuario ${email} eliminado con éxito`);
   
   } catch (error) {
   

@@ -14,12 +14,12 @@ export const Turnos = sequelize.define(
     fecha_hora: {
         type: DataTypes.DATE,
         allowNull: false,
-    },id_cliente: {
-        type: DataTypes.INTEGER,
+    },email_cliente: {
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: Usuario,
-            key: "id"
+            key: "email"
         },
     },id_servicio: {
         type: DataTypes.INTEGER,
@@ -28,12 +28,12 @@ export const Turnos = sequelize.define(
             model: Servicio,
             key: "id"
         }
-    },id_estilista: {
-        type: DataTypes.INTEGER,
+    },email_estilista: {
+        type: DataTypes.STRING,
         allowNull: false,
         references: {
             model: Usuario,
-            key: "id"
+            key: "email"
         },
     }
 },
