@@ -14,6 +14,18 @@ export const Servicio = sequelize.define(
         allowNull: false,
         unique: true,
     },
+    precio: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    descripcion: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
+    foto: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     },
     {
         timestamps: false

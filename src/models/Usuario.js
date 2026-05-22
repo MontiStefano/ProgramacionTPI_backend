@@ -30,6 +30,10 @@ export const Usuario = sequelize.define(
         type: DataTypes.STRING,
         allowNull: false,
     },
+    foto: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     },
     {
         timestamps: false
