@@ -11,10 +11,15 @@ export const Turnos = sequelize.define(
         allowNull: false,
         autoIncrement: true,
     },
-    fecha_hora: {
-        type: DataTypes.DATE,
+    fecha: {
+        type: DataTypes.STRING,
         allowNull: false,
-    },email_cliente: {
+    },
+    hora_turno: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    }
+    ,email_cliente: {
         type: DataTypes.STRING,
         allowNull: false,
         references: {
@@ -35,6 +40,15 @@ export const Turnos = sequelize.define(
             model: Usuario,
             key: "email"
         },
+    },
+    // 0 = Pendiente
+    // 1 = Aceptado
+    // 2 = Rechazado
+    // 3 = Finalizado
+    estado: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
     }
 },
     {
