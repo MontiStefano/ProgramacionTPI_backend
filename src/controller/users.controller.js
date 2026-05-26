@@ -1,5 +1,5 @@
 import { Usuario } from "../models/Usuario.js";
-
+import bcrypt from "bcrypt";
 
 export const getAllUsuarios = async (req, res) => {
   try {
@@ -28,6 +28,39 @@ export const getUsuarioById = async (req, res) => {
   }
 };
 
+
+export const loginUser = async (req, res) => {
+  try {
+  
+    const { email } = req.params;
+    
+    const usuario = await Usuario.findByPk(email);
+
+    if(!usuario) {
+      return res.status(401).json({ error: "Usuario no existente" });
+    }
+
+    const comparacion = await bcrypt.compare(req.body.password, usuario.password);
+
+    if(!comparacion) {
+      return res.status(401).json({ error: "Email o contraseña Incorrecta" });
+    }
+
+    const secretKey = 'progamacion3-2026';
+
+    const Token = jwt.sign({ email: usuario.email }, secretKey, { expiresIn: '1h' });
+
+    res.json(Token);
+  
+  } catch (error) {
+  
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ error: "Error al obtener usuarios" });
+
+  }
+};
+
+
 export const createUsuario = async (req, res) => {
   try {
 
@@ -38,11 +71,15 @@ export const createUsuario = async (req, res) => {
       password,
       telefono,
     } = req.body;
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const nuevoUsuario = await Usuario.create({
       email,
       nombreCompleto_usuario,
       id_permisos,
-      password,
+      password : hashedPassword,
       telefono,
     });
 
