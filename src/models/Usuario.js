@@ -28,7 +28,7 @@ export const Usuario = sequelize.define(
     },
     telefono: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
     },
     foto: {
         type: DataTypes.STRING,
