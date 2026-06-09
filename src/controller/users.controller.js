@@ -145,11 +145,13 @@ export const updateUsuario = async (req, res) => {
     }
 
     const usuario = await Usuario.findByPk(email);
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     await usuario.update({
       nombreCompleto_usuario,
       id_permisos,
-      password,
+      password: hashedPassword,
       telefono,
     });
 
