@@ -4,7 +4,11 @@ import { getAllServicios, getServicioById, createServicio, updateServicio, delet
 import { verifyToken } from "../Middleware/VerifyToken.js";
 
 const router = Router();
-router.get("/servicios", verifyToken, getAllServicios);
+
+// publica
+router.get("/servicios", getAllServicios);
+
+// protegida
 router.get("/servicios/:id", verifyToken, getServicioById);
 router.post("/servicios", verifyToken, createServicio);
 router.put("/servicios/:id", verifyToken, updateServicio);
