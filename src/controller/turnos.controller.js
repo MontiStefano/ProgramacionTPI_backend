@@ -31,74 +31,70 @@ export const getTurnoById = async (req, res) => {
 
 export const createTurno = async (req, res) => {
   try {
-
     const {
-      fecha_hora,
-      id_cliente,
+      fecha,
+      hora_turno,
+      email_cliente,
       id_servicio,
-      id_estilista
+      email_estilista,
+      estado
     } = req.body;
+
     const nuevoTurno = await Turnos.create({
-      fecha_hora,
-      id_cliente,
+      fecha,
+      hora_turno,
+      email_cliente,
       id_servicio,
-      id_estilista
+      email_estilista,
+      estado
     });
 
     res.json(nuevoTurno);
     
   } catch (error) {
-    
     console.error("Error al crear turno:", error);
     res.status(500).json({ error: "Error al crear turno" });
-  
   }
 };
 
 
 
 export const updateTurno = async (req, res) => {
-  
-
   try {
-  
     const { id } = req.params;
     const {
-      fecha_hora,
-      id_cliente,
+      fecha,
+      hora_turno,
+      email_cliente,
       id_servicio,
-      id_estilista
+      email_estilista,
+      estado
     } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "ID de turno no proporcionado" });
     }
 
-    if (
-      !fecha_hora &&
-      !id_cliente &&
-      !id_servicio &&
-      !id_estilista
-    ) {
-      return res.status(400).json({ error: "Faltan campos obligatorios" });
-    }
-
     const turno = await Turnos.findByPk(id);
 
+    if (!turno) {
+      return res.status(404).json({ error: "Turno no encontrado" });
+    }
+
     await turno.update({
-      fecha_hora,
-      id_cliente,
-      id_servicio,
-      id_estilista
+      ...(fecha && { fecha }),
+      ...(hora_turno && { hora_turno }),
+      ...(email_cliente && { email_cliente }),
+      ...(id_servicio && { id_servicio }),
+      ...(email_estilista && { email_estilista }),
+      ...(estado !== undefined && { estado }),
     });
 
     res.json(turno);
-  
+
   } catch (error) {
-  
     console.error("Error al Actualizar turnos:", error);
     res.status(500).json({ error: "Error al actualizar turnos" });
-  
   }
 };
 
