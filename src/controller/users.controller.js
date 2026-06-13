@@ -62,29 +62,49 @@ export const loginUser = async (req, res) => {
 };
 
 export const registerUser = async (req, res) => {
-  const { nombreCompleto_usuario, email, password, telefono } = req.body
+  const { nombreCompleto_usuario, email, password, telefono } = req.body;
 
-  const user = await Usuario.findOne({
-    where: {
-      email
-    }
-  })
-  if (user) {
-    return res.status(400).send({ message: "El usuario ya existe" })
+  // ── validaciones ────────────────────────────────────────────────────────────
+
+  if (!nombreCompleto_usuario?.trim())
+    return res.status(400).json({ message: "El nombre completo es obligatorio." });
+
+  if (!email?.trim())
+    return res.status(400).json({ message: "El email es obligatorio." });
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email))
+    return res.status(400).json({ message: "El email no tiene un formato válido." });
+
+  if (!password)
+    return res.status(400).json({ message: "La contraseña es obligatoria." });
+
+  // ── lógica ──────────────────────────────────────────────────────────────────
+
+  try {
+    const existente = await Usuario.findOne({ where: { email } });
+    if (existente)
+      return res.status(400).json({ message: "Ya existe una cuenta con ese email." });
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const newUser = await Usuario.create({
+      nombreCompleto_usuario: nombreCompleto_usuario.trim(),
+      email: email.trim(),
+      password: hashedPassword,
+      telefono: telefono?.trim() || "",
+      id_permisos: 0,
+    });
+
+    res.status(201).json(newUser);
+
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    res.status(500).json({ message: "Error interno al registrar el usuario." });
   }
-  const saltRounds = 10;
-  const salt = await bcrypt.genSalt(saltRounds);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  const newUser = await Usuario.create({
-    nombreCompleto_usuario,
-    email,
-    password: hashedPassword,
-    telefono,
-    id_permisos: 0,
-  });
-  
-  res.json(newUser)
-}
+};
+
 
 
 export const createUsuario = async (req, res) => {
