@@ -1,17 +1,18 @@
 import { Router } from "express";
 import { Servicio } from "../models/Servicios.js";
 import { getAllServicios, getServicioById, createServicio, updateServicio, deleteServicio } from "../controller/servicios.controller.js";
-import { verifyToken } from "../Middleware/VerifyToken.js";
+import { verifyToken, verifyRole } from "../Middleware/VerifyToken.js";
+import { ROLES } from "../constants/roles.js";
 
 const router = Router();
 
-// publica
+// publico
 router.get("/servicios", getAllServicios);
+router.get("/servicios/:id", getServicioById);
 
-// protegida
-router.get("/servicios/:id", verifyToken, getServicioById);
-router.post("/servicios", verifyToken, createServicio);
-router.put("/servicios/:id", verifyToken, updateServicio);
-router.delete("/servicios/:id", verifyToken, deleteServicio);
+// privado - solo para admin o superadmin
+router.post("/servicios", verifyRole([ROLES.ADMIN, ROLES.SUPERADMIN]), createServicio);
+router.put("/servicios/:id", verifyRole([ROLES.ADMIN, ROLES.SUPERADMIN]), updateServicio);
+router.delete("/servicios/:id", verifyRole([ROLES.ADMIN, ROLES.SUPERADMIN]), deleteServicio);
 
 export default router;

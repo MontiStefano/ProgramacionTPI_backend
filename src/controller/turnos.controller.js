@@ -1,30 +1,60 @@
-import { Turnos } from "../models/Turnos.js";
-
+import { Turnos, Usuario, Servicio } from "../models/Relaciones.js";
+import { ROLES } from "../constants/roles.js";
 
 
 export const getAllTurnos = async (req, res) => {
   try {
+    const { role, email } = req.user; // tomamos del token
 
-    const turnos = await Turnos.findAll();
+    let where = {};   // si es SUPERADMIN no filtra
+
+    if (role === ROLES.ADMIN) { 
+      where.email_estilista = email;  // si es ADMIN filtra por estilista
+    } else if (role === ROLES.USER) {
+      where.email_cliente = email;    // si es USER filtra por cliente
+    }
+
+    const turnos = await Turnos.findAll({
+      where,
+      // incluimos de las relaciones
+      include: [
+        {
+          model: Usuario,
+          as: "cliente",
+          attributes: ["email", "nombreCompleto_usuario"],
+        },
+        {
+          model: Usuario,
+          as: "estilista",
+          attributes: ["email", "nombreCompleto_usuario"],
+        },
+        {
+          model: Servicio,
+          as: "servicio",
+          attributes: ["id", "nombre_servicio", "precio"],
+        },
+      ],
+    });
+
     res.json(turnos);
 
   } catch (error) {
-    console.error("Error al obtener turnos:", error);
+    console.error("Error al obtener turnos: ", error);
     res.status(500).json({ error: "Error al obtener turnos" });
   }
 };
 
 export const getTurnoById = async (req, res) => {
   try {
-  
+
     const { id } = req.params;
     const turno = await Turnos.findByPk(id);
     res.json(turno);
-  
+
   } catch (error) {
-  
-    console.error("Error al obtener turnos:", error);
-    res.status(500).json({ error: "Error al obtener turnos" });
+
+    console.error("Error al obtener turnos por id: ", error);
+    res.status(500).json({ error: "Error al obtener turnos por id" });
 
   }
 };
@@ -50,7 +80,7 @@ export const createTurno = async (req, res) => {
     });
 
     res.json(nuevoTurno);
-    
+
   } catch (error) {
     console.error("Error al crear turno:", error);
     res.status(500).json({ error: "Error al crear turno" });
@@ -100,16 +130,16 @@ export const updateTurno = async (req, res) => {
 
 export const deleteTurno = async (req, res) => {
   try {
-  
+
     const { id } = req.params;
     await Turnos.destroy({ where: { id } });
     res.send(`Turno ${id} eliminado con éxito`);
-  
+
   } catch (error) {
-  
+
     console.error("Error al Borrar turnos:", error);
     res.status(500).json({ error: "Error al borrar turnos" });
-  
+
   }
 };
 
