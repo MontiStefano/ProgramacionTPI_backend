@@ -13,8 +13,11 @@ router.get("/turnos/:id", verifyToken, getTurnoById);
 router.get("/turnos", verifyToken, getAllTurnos);
 
 
+// privado - solo para admin o superadmin
+router.put("/turnos/:id", verifyRole([ROLES.SUPERADMIN, ROLES.ADMIN]), updateTurno);
+
+
 // privado - solo para superadmin
-router.put("/turnos/:id", verifyRole([ROLES.SUPERADMIN]), updateTurno);
 router.delete("/turnos/:id", verifyRole([ROLES.SUPERADMIN]), deleteTurno);
 
 
