@@ -79,6 +79,28 @@ export const updateMe = async (req, res) => {
   }
 };
 
+export const getPeluqueros = async (req, res) => {
+  try {
+
+    const peluqueros = await Usuario.findAll({
+      where: { id_permisos: 1 },
+      attributes: ["email", "nombreCompleto_usuario", "telefono", "foto"]
+    });
+
+    if (!peluqueros) {
+      return res.status(404).json({ error: "No se encontró un peluquero" });
+    }
+
+    res.json(peluqueros);
+
+  } catch (error) {
+
+    console.error("Error al obtener peluqueros:", error);
+    res.status(500).json({ error: "Error al obtener peluqueros" });
+
+  }
+};
+
 export const loginUser = async (req, res) => {
   try {
 
