@@ -29,11 +29,60 @@ export const getUsuarioById = async (req, res) => {
   }
 };
 
+export const getMe = async (req, res) => {
+  try {
+
+    const { email } = req.user;
+
+    const usuario = await Usuario.findOne({
+      where: { email },
+      attributes: ["email", "nombreCompleto_usuario", "telefono"]
+    });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "No se encontró un usuario" });
+    }
+
+    res.json(usuario);
+
+  } catch (error) {
+
+    console.error("Error al obtener usuarios:", error);
+    res.status(500).json({ error: "Error al obtener usuarios" });
+
+  }
+};
+
+export const updateMe = async (req, res) => {
+  try {
+    const { email } = req.user;
+    const { nombreCompleto_usuario, telefono, password } = req.body;
+
+    const usuario = await Usuario.findOne({ where: { email } });
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    await usuario.update({
+      nombreCompleto_usuario,
+      telefono,
+      password: hashedPassword
+    });
+
+    res.json({ message: "Usuario actualizado" });
+
+  } catch (error) {
+    res.status(500).json({ error: "Error al actualizar usuario" });
+  }
+};
 
 export const loginUser = async (req, res) => {
   try {
 
-    const { email , password} = req.body;
+    const { email, password } = req.body;
 
     const usuario = await Usuario.findByPk(email);
 
@@ -49,7 +98,7 @@ export const loginUser = async (req, res) => {
 
     const secretKey = 'progamacion3-2026';
 
-    const Token = jwt.sign({ email, role: usuario.id_permisos}, secretKey, { expiresIn: '1h' });
+    const Token = jwt.sign({ email, role: usuario.id_permisos }, secretKey, { expiresIn: '1h' });
 
     res.json(Token);
 
@@ -103,8 +152,19 @@ export const registerUser = async (req, res) => {
     console.error("Error al registrar usuario:", error);
     res.status(500).json({ message: "Error interno al registrar el usuario." });
   }
-};
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  const newUser = await Usuario.create({
+    nombreCompleto_usuario,
+    email,
+    password: hashedPassword,
+    telefono,
+    id_permisos: 0,
+  });
 
+  res.json(newUser)
+}
 
 
 export const createUsuario = async (req, res) => {
