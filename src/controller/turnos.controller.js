@@ -8,7 +8,7 @@ export const getAllTurnos = async (req, res) => {
 
     let where = {};   // si es SUPERADMIN no filtra
 
-    if (role === ROLES.ADMIN) { 
+    if (role === ROLES.ADMIN) {
       where.email_estilista = email;  // si es ADMIN filtra por estilista
     } else if (role === ROLES.USER) {
       where.email_cliente = email;    // si es USER filtra por cliente
@@ -36,6 +36,21 @@ export const getAllTurnos = async (req, res) => {
       ],
     });
 
+    const ahora = new Date();
+    for (const turno of turnos) {
+      const fechaHoraTurno = new Date(`${turno.fecha}T${turno.hora_turno}:00`);
+
+      if (turno.estado != 2 && fechaHoraTurno <= ahora) {
+        await turno.update({ estado: 3 });
+      }
+    }
+
+    turnos.sort((a, b) => {
+      const fechaA = new Date(`${a.fecha}T${a.hora_turno}:00`);
+      const fechaB = new Date(`${b.fecha}T${b.hora_turno}:00`);
+      return fechaA - fechaB;
+    });
+
     res.json(turnos);
 
   } catch (error) {
@@ -43,6 +58,8 @@ export const getAllTurnos = async (req, res) => {
     res.status(500).json({ error: "Error al obtener turnos" });
   }
 };
+
+
 
 export const getTurnoById = async (req, res) => {
   try {
