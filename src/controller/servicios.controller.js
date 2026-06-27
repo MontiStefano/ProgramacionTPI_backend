@@ -32,11 +32,10 @@ export const createServicio = async (req, res) => {
   try {
 
     const {
-      nombre_servicio,
+      servicio,
     } = req.body;
-    const nuevoServicio = await Servicio.create({
-      nombre_servicio,
-    });
+
+    const nuevoServicio = await Servicio.create(servicio);
 
     res.json(nuevoServicio);
     
@@ -56,25 +55,26 @@ export const updateServicio = async (req, res) => {
   
     const { id } = req.params;
     const {
-      nombre_servicio,
+      servicioActualizado
     } = req.body;
-
+    
     if (!id) {
       return res.status(400).json({ error: "ID de servicio no proporcionado" });
     }
 
     if (
-      !nombre_servicio 
+      !servicioActualizado
     ) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
     const servicio = await Servicio.findByPk(id);
-
     await servicio.update({
-      nombre_servicio,
+      nombre_servicio: servicioActualizado.nombre_servicio,
+      precio: servicioActualizado.precio,
+      descripcion: servicioActualizado.descripcion,
+      foto: servicioActualizado.foto
     });
-
     res.json(servicio);
   
   } catch (error) {
