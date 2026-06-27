@@ -143,3 +143,21 @@ export const deleteTurno = async (req, res) => {
   }
 };
 
+export const getTurnosByIdServicio = async (req, res) => {
+  try {
+
+    const { id } = req.params;
+    const turno = await Turnos.findAll({
+      where: {
+        id_servicio: id
+      }
+    });
+    res.json(turno);
+
+  } catch (error) {
+
+    console.error("Error al obtener turnos por servicio: ", error);
+    res.status(500).json({ error: "Error al obtener turnos por servicio" });
+
+  }
+};
