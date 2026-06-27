@@ -21,11 +21,13 @@ export const getAllTurnos = async (req, res) => {
         {
           model: Usuario,
           as: "cliente",
+          required: true,
           attributes: ["email", "nombreCompleto_usuario"],
         },
         {
           model: Usuario,
           as: "estilista",
+          required: true,
           attributes: ["email", "nombreCompleto_usuario"],
         },
         {
@@ -48,6 +50,19 @@ export const getAllTurnos = async (req, res) => {
     turnos.sort((a, b) => {
       const fechaA = new Date(`${a.fecha}T${a.hora_turno}:00`);
       const fechaB = new Date(`${b.fecha}T${b.hora_turno}:00`);
+
+      const estadoGrupo = (estado) => (estado === 0 || estado === 1 ? 0 : 1);
+
+      const grupoA = estadoGrupo(a.estado); // pendientes y aprobados
+      const grupoB = estadoGrupo(b.estado); // cancelados y finalizados
+
+      // primero por grupo (activos arriba)
+      if (grupoA !== grupoB) {
+        return grupoA - grupoB;
+      }
+
+
+      // dentro del grupo por fecha más cercana
       return fechaA - fechaB;
     });
 

@@ -59,18 +59,27 @@ export const updateMe = async (req, res) => {
     const { nombreCompleto_usuario, telefono, password } = req.body;
 
     const usuario = await Usuario.findOne({ where: { email } });
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    await usuario.update({
-      nombreCompleto_usuario,
-      telefono,
-      password: hashedPassword
-    });
+    const updateData = {};
+
+    if (nombreCompleto_usuario !== undefined) {
+      updateData.nombreCompleto_usuario = nombreCompleto_usuario;
+    }
+
+    if (telefono !== undefined) {
+      updateData.telefono = telefono;
+    }
+
+    if (password) {
+      const saltRounds = 10;
+      updateData.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    await usuario.update(updateData);
 
     res.json({ message: "Usuario actualizado" });
 
@@ -104,7 +113,8 @@ export const getPeluqueros = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
 
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.trim().toLowerCase();
 
     const usuario = await Usuario.findByPk(email);
 
@@ -133,7 +143,9 @@ export const loginUser = async (req, res) => {
 };
 
 export const registerUser = async (req, res) => {
-  const { nombreCompleto_usuario, email, password, telefono } = req.body;
+  let { nombreCompleto_usuario, email, password, telefono } = req.body;
+
+  email = email.trim().toLowerCase();
 
   // ── validaciones ────────────────────────────────────────────────────────────
 
@@ -238,24 +250,33 @@ export const updateUsuario = async (req, res) => {
     }
 
     if (
-      !nombreCompleto_usuario &&
-      !id_permisos &&
-      !password &&
-      !telefono
+      nombreCompleto_usuario === undefined &&
+      id_permisos === undefined &&
+      password === undefined &&
+      telefono === undefined
     ) {
-      return res.status(400).json({ error: "Faltan campos obligatorios" });
+      return res.status(400).json({ error: "Faltan campos para actualizar" });
     }
 
     const usuario = await Usuario.findByPk(email);
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await usuario.update({
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+
+    const updateData = {
       nombreCompleto_usuario,
       id_permisos,
-      password: hashedPassword,
       telefono,
-    });
+    };
+
+    // si hay contraseña para actualizar, la encripta y la guarda en updateData
+    if (password) {
+      const saltRounds = 10;
+      updateData.password = await bcrypt.hash(password, saltRounds);
+    }
+
+    await usuario.update(updateData);
 
     res.json(usuario);
 
